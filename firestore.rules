@@ -1,0 +1,121 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isApproved() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == 'approved';
+    }
+
+    // Users collection
+    match /users/{userId} {
+      // Allow public read for all profiles, and public list for directories
+      allow read: if true;
+      
+      // Users can only create their own profile (during registration)
+      allow create: if request.auth != null && request.auth.uid == userId;
+
+      // Users can update their own profile (if approved), OR an admin can update any user.
+      allow update: if request.auth != null && (
+                      (request.auth.uid == userId && isApproved()) || 
+                      (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+                    );
+      
+      // Disallow client-side hard deletes. Deletion is a status update handled by the update rule.
+      allow delete: if false;
+    }
+
+    // Posts collection
+    match /posts/{postId} {
+      // Approved users can read all posts
+      allow read: if isApproved();
+      
+      // Approved users (graduates and companies) can create posts for themselves.
+      allow create: if isApproved() && request.resource.data.authorId == request.auth.uid;
+      
+      // Users can only update or delete their own posts, if approved.
+      allow update, delete: if isApproved() && get(/databases/$(database)/documents/posts/$(postId)).data.authorId == request.auth.uid;
+    }
+
+    // Follows collection
+    match /follows/{followId} {
+      // Approved users can read all follow relationships
+      allow read: if isApproved();
+
+      // Approved users can only create a 'follow' record for themselves
+      allow create: if isApproved() && request.resource.data.followerId == request.auth.uid;
+      
+      // Approved users can only delete their own 'follow' record (unfollow)
+      allow delete: if isApproved() && get(/databases/$(database)/documents/follows/$(followId)).data.followerId == request.auth.uid;
+      
+      // Updating a follow relationship is not allowed
+      allow update: if false;
+    }
+
+    // Jobs collection
+    match /jobs/{jobId} {
+        // Anyone can read job postings
+        allow read: if true;
+
+        // Approved companies can create jobs
+        allow create: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'company'
+                    && isApproved()
+                    && request.resource.data.companyId == request.auth.uid;
+        
+        // The approved company that created the job can update or delete it
+        allow update, delete: if isApproved() 
+                           && get(/databases/$(database)/documents/jobs/$(jobId)).data.companyId == request.auth.uid;
+    }
+
+    // Likes collection
+    match /likes/{likeId} {
+      // Approved users can read likes
+      allow read: if isApproved();
+      
+      // Approved users can only create likes for themselves
+      allow create: if isApproved() && request.resource.data.userId == request.auth.uid;
+      
+      // Approved users can only delete their own likes
+      allow delete: if isApproved() && get(/databases/$(database)/documents/likes/$(likeId)).data.userId == request.auth.uid;
+      
+      // Updating a like is not allowed
+      allow update: if false;
+    }
+
+    // Comments collection
+    match /comments/{commentId} {
+      // Approved users can read comments
+      allow read: if isApproved();
+      
+      // Approved users can create comments for themselves
+      allow create: if isApproved() && request.resource.data.userId == request.auth.uid;
+      
+      // Approved users can only delete or update their own comments
+      allow update, delete: if isApproved() && get(/databases/$(database)/documents/comments/$(commentId)).data.userId == request.auth.uid;
+    }
+
+    // Job Applications collection
+    match /job-applications/{applicationId} {
+      // Only the approved applicant or the approved company can read the application
+      allow read: if isApproved() && (
+                    request.auth.uid == get(/databases/$(database)/documents/job-applications/$(applicationId)).data.userId ||
+                    request.auth.uid == get(/databases/$(database)/documents/job-applications/$(applicationId)).data.companyId
+                  );
+
+      // Approved graduates can create an application for themselves
+      allow create: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'graduate'
+                    && isApproved()
+                    && request.resource.data.userId == request.auth.uid
+                    && applicationId == request.auth.uid + '_' + request.resource.data.jobId;
+      
+      // Approved companies can update the status.
+      allow update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'company'
+                    && isApproved()
+                    && get(/databases/$(database)/documents/job-applications/$(applicationId)).data.companyId == request.auth.uid
+                    && request.resource.data.keys().hasOnly(['status']);
+
+      // Approved applicants can withdraw their application.
+      allow delete: if isApproved() 
+                    && get(/databases/$(database)/documents/job-applications/$(applicationId)).data.userId == request.auth.uid;
+    }
+  }
+}

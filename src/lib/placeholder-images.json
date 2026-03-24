@@ -1,0 +1,22 @@
+{
+  "placeholderImages": [
+    {
+      "id": "hero-1",
+      "description": "A group of diverse graduates in cap and gown, smiling and celebrating.",
+      "imageUrl": "https://picsum.photos/seed/hero1/1600/600",
+      "imageHint": "graduation celebration"
+    },
+    {
+      "id": "hero-2",
+      "description": "Students collaborating on a project in a modern library setting.",
+      "imageUrl": "https://picsum.photos/seed/hero2/1600/600",
+      "imageHint": "students collaborating"
+    },
+    {
+      "id": "hero-3",
+      "description": "A panoramic view of the university campus on a sunny day.",
+      "imageUrl": "https://picsum.photos/seed/hero3/1600/600",
+      "imageHint": "university campus"
+    }
+  ]
+}

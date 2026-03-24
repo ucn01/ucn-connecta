@@ -1,0 +1,172 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Represents a user, either a graduate or a company.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["graduate", "company", "admin"] },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected", "deleted"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+
+        "fullName": { "type": "string", "description": "Graduate's full name" },
+        "idNumber": { "type": "string", "description": "Graduate's ID number" },
+        "phoneNumber": { "type": "string" },
+        "campus": { "type": "string" },
+        "graduationYear": { "type": "number" },
+        "photoUrl": { "type": "string", "format": "uri" },
+        "career": { "type": "string" },
+        "workplace": { "type": "string" },
+        "profileDescription": { "type": "string", "description": "AI-generated professional profile description." },
+        
+        "companyName": { "type": "string" },
+        "hrManagerName": { "type": "string" },
+        "hrManagerEmail": { "type": "string", "format": "email" },
+        "hrManagerPhone": { "type": "string" },
+        "adminName": { "type": "string" },
+        "adminPosition": { "type": "string" },
+        "adminArea": { "type": "string" },
+        "adminPhone": { "type": "string" },
+        "companyDescription": { "type": "string" },
+        "companySector": { "type": "string" },
+        "companyWebsite": { "type": "string", "format": "uri" },
+        "companyLocation": { "type": "string" },
+        "companySize": { "type": "string" },
+        "yearFounded": { "type": "number" },
+        "companyCulture": { "type": "string" },
+        "employeeBenefits": { "type": "string" },
+        "deleteReason": { "type": "string", "description": "Reason why the user account was deleted." },
+        "deletedAt": { "type": "string", "format": "date-time", "description": "Timestamp when the user account was deleted." }
+      }
+    },
+    "Job": {
+      "title": "Job",
+      "description": "A job posting by a company.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "requirements": { "type": "string" },
+        "companyId": { "type": "string" },
+        "companyName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "location": { "type": "string" },
+        "salary": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "closed"] },
+        "jobType": { "type": "string", "enum": ["Tiempo completo", "Medio tiempo", "Prácticas"] },
+        "applicationDeadline": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Post": {
+        "title": "Post",
+        "description": "A post in the feed by a graduate or company.",
+        "type": "object",
+        "properties": {
+            "authorId": { "type": "string" },
+            "authorName": { "type": "string" },
+            "authorRole": { "type": "string", "enum": ["graduate", "company", "admin"] },
+            "authorCareer": { "type": "string" },
+            "authorCampus": { "type": "string" },
+            "authorPhotoUrl": { "type": "string", "format": "uri" },
+            "content": { "type": "string" },
+            "imageUrl": { "type": "string", "format": "uri" },
+            "createdAt": { "type": "string", "format": "date-time" }
+        }
+    },
+    "Follow": {
+      "title": "Follow",
+      "description": "Represents a follow relationship between two users.",
+      "type": "object",
+      "properties": {
+        "followerId": {
+          "type": "string",
+          "description": "The UID of the user who is following."
+        },
+        "followingId": {
+          "type": "string",
+          "description": "The UID of the user who is being followed."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["followerId", "followingId", "createdAt"]
+    },
+    "Like": {
+      "title": "Like",
+      "description": "Represents a like on a post.",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string" },
+        "userId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["postId", "userId", "createdAt"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "Represents a comment on a post.",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string" },
+        "userId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorPhotoUrl": { "type": "string", "format": "uri" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["postId", "userId", "text", "createdAt"]
+    },
+    "JobApplication": {
+      "title": "Job Application",
+      "description": "Represents a graduate's application for a job.",
+      "type": "object",
+      "properties": {
+        "jobId": { "type": "string" },
+        "userId": { "type": "string" },
+        "companyId": { "type": "string" },
+        "applicantName": { "type": "string", "description": "Name of the applicant graduate." },
+        "cvUrl": { "type": "string", "format": "uri", "description": "URL to the applicant's CV in Firebase Storage." },
+        "status": { "type": "string", "enum": ["sent", "reviewed", "rejected"] },
+        "appliedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["jobId", "userId", "companyId", "applicantName", "cvUrl", "status", "appliedAt"]
+    }
+  },
+  "auth": {
+    "providers": ["email"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/backend/entities/User" },
+      "description": "Stores user profiles."
+    },
+    "/jobs/{jobId}": {
+      "schema": { "$ref": "#/backend/entities/Job" },
+      "description": "Stores job postings."
+    },
+    "/posts/{postId}": {
+        "schema": { "$ref": "#/backend/entities/Post" },
+        "description": "Stores feed posts."
+    },
+    "/follows/{followId}": {
+      "schema": { "$ref": "#/backend/entities/Follow" },
+      "description": "Stores follow relationships between users."
+    },
+    "/likes/{likeId}": {
+      "schema": { "$ref": "#/backend/entities/Like" },
+      "description": "Stores likes on posts."
+    },
+    "/comments/{commentId}": {
+      "schema": { "$ref": "#/backend/entities/Comment" },
+      "description": "Stores comments on posts."
+    },
+    "/job-applications/{applicationId}": {
+      "schema": { "$ref": "#/backend/entities/JobApplication" },
+      "description": "Stores job applications from graduates, with document ID as {userId}_{jobId} to prevent duplicates."
+    }
+  }
+}
