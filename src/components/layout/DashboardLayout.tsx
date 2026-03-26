@@ -77,7 +77,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   };
   // --- END: Admin-specific data fetching ---
 
-
   const handleLogout = async () => {
     if (!app) return;
     const auth = getAuth(app);
@@ -96,6 +95,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     { href: '/directory', label: 'Graduados', icon: Users },
     { href: '/companies', label: 'Empresas', icon: Building },
     { href: '/jobs', label: 'Empleos', icon: Briefcase },
+
+    // 🔒 SOLO EMPRESAS (AQUÍ ESTÁ EL CAMBIO)
+    ...(user?.role === 'company'
+      ? [{ href: '/applications', label: 'Solicitudes', icon: Briefcase }]
+      : []),
+
     { href: '/historias-exito', label: 'Historias de Éxito', icon: Trophy },
     { href: '/news', label: 'Noticias UCN', icon: Newspaper },
   ];

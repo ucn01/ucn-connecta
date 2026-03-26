@@ -22,7 +22,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { CheckCircle, Loader2 } from 'lucide-react';
+import { CheckCircle, Loader2, Eye, EyeOff } from 'lucide-react'; // 👈 agregado
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
@@ -58,6 +58,7 @@ const formSchema = z.object({
 
 export function CompanyRegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // 👈 agregado
   const { toast } = useToast();
   const app = useFirebaseApp();
   const router = useRouter();
@@ -285,6 +286,8 @@ export function CompanyRegisterForm() {
                     </FormItem>
                   )}
                 />
+
+                {/* 👁️ SOLO AQUÍ CAMBIO */}
                 <FormField
                   control={form.control}
                   name="password"
@@ -292,12 +295,26 @@ export function CompanyRegisterForm() {
                     <FormItem>
                       <FormLabel>Contraseña</FormLabel>
                       <FormControl>
-                        <Input type="password" {...field} />
+                        <div className="relative">
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            {...field}
+                            className="pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                          >
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          </button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
               </div>
             </div>
 

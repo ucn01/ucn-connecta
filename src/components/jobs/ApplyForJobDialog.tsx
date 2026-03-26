@@ -25,7 +25,9 @@ import { Loader2, Upload, Send } from 'lucide-react';
 import type { Job, User } from '@/lib/types';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_FILE_TYPES = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
+// 🔒 SOLO PDF
+const ACCEPTED_FILE_TYPES = ['application/pdf'];
 
 const formSchema = z.object({
   cv: z
@@ -34,7 +36,7 @@ const formSchema = z.object({
     .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `El tamaño máximo es 5MB.`)
     .refine(
       (files) => ACCEPTED_FILE_TYPES.includes(files?.[0]?.type),
-      'Solo se aceptan formatos .pdf, .doc, .docx'
+      'Solo se aceptan archivos PDF'
     ),
 });
 
@@ -118,12 +120,13 @@ export function ApplyForJobDialog({ job, user, children }: ApplyForJobDialogProp
               name="cv"
               render={({ field: { value, onChange, ...fieldProps } }) => (
                 <FormItem>
-                  <FormLabel>Adjuntar Curriculum Vitae (PDF, Word, max 5MB)</FormLabel>
+                  <FormLabel>Adjuntar Curriculum Vitae (PDF, max 5MB)</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Upload className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                       <Input
                         type="file"
+                        accept="application/pdf"
                         className="pl-10"
                         {...fieldProps}
                         onChange={(event) => {
