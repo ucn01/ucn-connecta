@@ -1,3 +1,4 @@
+"use client";
 'use client';
 import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';

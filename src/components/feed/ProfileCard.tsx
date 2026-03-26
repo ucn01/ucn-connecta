@@ -1,3 +1,4 @@
+"use client";
 'use client';
 import type { User } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

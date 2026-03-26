@@ -1,3 +1,4 @@
+"use client";
 'use client';
 import type { Job } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';

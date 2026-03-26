@@ -1,3 +1,4 @@
+"use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GraduateRegisterForm } from "@/components/auth/graduate-register-form";
 import { CompanyRegisterForm } from "@/components/auth/company-register-form";

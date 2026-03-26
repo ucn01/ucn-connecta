@@ -1,4 +1,5 @@
 "use client";
+;
 
 import { CreatePost } from '@/components/feed/CreatePost';
 import { useUser } from '@/firebase';

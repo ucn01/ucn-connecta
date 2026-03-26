@@ -1,3 +1,4 @@
+"use client";
 'use client';
 import type { Post, Like, Comment, User } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
